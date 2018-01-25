@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<head>
+    <style>
+    h2 {
+        text-align:center;
+        font-size: 40px;
+        }
+    </style>
+</head>
+<body>
 <h2>{{blog.title}}</h2>
 <p>{{blog.body}}</p>
-
+</body>
 {% endblock %}
