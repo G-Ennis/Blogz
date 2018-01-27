@@ -49,8 +49,8 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method =='POST':
-        username = request.form('username')
-        password = request.form('password')
+        username = request.form['username']
+        password = request.form['password']
         user = User.query.filter_by(username=username).first()
         if user and user.password == password:
             session['username'] = username
@@ -88,9 +88,9 @@ def signup():
             verify = ''
 
         if not username_error and not password_error and not verify_error:
-            return render_template('index.html')
+            return render_template('index.html', username = username)
         else:
-            return render_template('index.html', username = username, username_error = username_error, password_error = password_error, verify_error = verify_error, email = email, email_error = email_error)
+            return render_template('signup.html', username = username, username_error = username_error, password_error = password_error, verify_error = verify_error, email = email, email_error = email_error)
 
 
 @app.route('/blog')
