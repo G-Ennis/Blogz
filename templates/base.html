@@ -2,8 +2,9 @@
 <!doctype html>
 <html>
     <nav>
-        <a href='blog'>Main Blog Page</a>
-        <a href='newpost'>Add a New Blog Entry</a>
+        <a href='/'>Home</a>
+        <a href='/blog'>All Posts</a>
+        <a href='/newpost'>Add a New Blog Entry</a>
     </nav>
 
     <head>
@@ -16,20 +17,19 @@
                 font-size: 40px;
             }
             nav>a {
-                background-color: rgb(252, 252, 98);
-                text-align: center; 
-                text-decoration: none;
+                text-align: center;
             }
         </style>
         <title>{{title}}</title>
     </head>
     <body>
         <div>
-            <a href='/logout'>log out</a>
+            <a href='/login'>Login</a>
+            <a href='/logout'>Logout</a>
         </div>
             {% with messages = get_flashed_messages(with_categories=True) %}
                 <ul>
-                    {% for category.message in messages %}
+                    {% for category,message in messages %}
                         <li class={{category}}>{{messages}}</li>
                     {% endfor %}    
                 </ul>

@@ -32,16 +32,19 @@ class User(db.Model):
     def __init__(self, username, password):
         self.username = username 
         self.password = password
-       
-@app.route('/')
-def index():
-    return render_template('index.html', title="blog users!")
+
 
 @app.before_request
 def require_login():
-    allowed routes = ['login','blog','index','signup']
-    if request.endpoint not in allowed_routes and 'username' not in session:
+    require_login = ['new_post']
+    if request.endpoint in require_login and 'username' not in session:
         return redirect('/login')
+
+@app.route('/')
+def index():
+    users = User.query.all()
+    return render_template('index.html', title="blog users!", users=users)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -55,53 +58,54 @@ def login():
             return redirect('/')
         else:
             flash('User password incorrect or user does not exist','error') 
+    return render_template('login.html')
+
 
 @app.route('/signup', methods=['GET','POST'])
 def signup():
+    if request.method == 'POST': 
+        username = request.form['username'] 
+        username_error = ''
 
-    username = request.form['username'] 
-    username_error = ''
+        if len(username) < 3 or len(username) > 20:
+            username_error = "Username must be between 3 and 20 characters"
+        if ' ' in username:
+            username_error = "Not a valid username"   
 
-    if len(username) < 3 or len(username) > 20:
-        username_error = "Username must be between 3 and 20 characters"
-    if ' ' in username:
-        username_error = "Not a valid username"   
-
-    password = request.form['password'] 
-    password_error = ''
-    verify = request.form['verify']
-    verify_error = ''
+        password = request.form['password'] 
+        password_error = ''
+        verify = request.form['verify']
+        verify_error = ''
     
-    if len(password) < 3 or len(password) > 20:
-        password_error = "Password must be between 3 and 20 characters"
-        password = ''
-    if ' ' in password:
-        password_error = "Not a valid password"
-        password = ''
-    if verify != password or len(verify) == 0:
-        verify_error = "Passwords do not match"
-        verify = ''
+        if len(password) < 3 or len(password) > 20:
+            password_error = "Password must be between 3 and 20 characters"
+            password = ''
+        if ' ' in password:
+            password_error = "Not a valid password"
+            password = ''
+        if verify != password or len(verify) == 0:
+            verify_error = "Passwords do not match"
+            verify = ''
 
-    if not username_error and not password_error and not verify_error:
-        return render_template('index.html')
-    else:
-        return render_template('index.html', username = username, username_error = username_error, password_error = password_error, verify_error = verify_error, email = email, email_error = email_error)
-
-
+        if not username_error and not password_error and not verify_error:
+            return render_template('index.html')
+        else:
+            return render_template('index.html', username = username, username_error = username_error, password_error = password_error, verify_error = verify_error, email = email, email_error = email_error)
 
 
 @app.route('/blog')
 def blog():
     blogs = Blog.query.order_by(Blog.id.desc()).all()
-    return render_template('blog.html',title="" blogs=blogs)
+    return render_template('blog.html', title="blog posts!", blogs=blogs)
+
 
 @app.route('/singleblog')
 def single_blog():
-    id = int(request.args.get('id'))
-    blog = Blog.query.filter_by(id=id).first()
-    return render_template('single_blog.html', title="", id=id, blog=blog)
+    blog_id = request.args.get('id')
+    blog = Blog.query.get(blog_id)
+    return render_template('single_blog.html', blog=blog)
     
-     
+
 @app.route('/newpost', methods=['GET', 'POST'])
 def new_post():
     if request.method == 'GET':
@@ -128,6 +132,22 @@ def new_post():
             db.session.commit()
             return render_template('single_blog.html', blog=blog, blog_title=blog_title, blog_body=blog_body)    
 
+
+@app.route('/singleuser')
+def singleuser():
+    user_id = request.args.get('user')
+    user = User.query.get(user_id)
+    owner = user
+    blog = Blog.query.filter_by(owner_id=user_id).all
+    return render_template('single_user.html', blogs=blogs)
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    if "username" in session:
+        del session["username"]
+    return render_template('blog.html')
+        
 
 if __name__ == '__main__':
     app.run()

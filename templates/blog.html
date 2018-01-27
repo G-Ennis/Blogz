@@ -2,7 +2,7 @@
 
 {% block content %} 
 
-    <h1>Build a Blog</h1>
+    <h1>Blog Posts!</h1>
     
     {% if blogs|length == 0 %}
     <p>No blogs to display</p>
@@ -12,8 +12,9 @@
         <ul>
             {% for blog in blogs %}
             <li>
-            <h3><a href= '/singleblog?id={{blog.id}}'>{{blog.title}}</a></h3>
+            <h3><a href= '/blog?id={{blog.id}}'>{{blog.title}}</a></h3>
             {{blog.body}}
+            <h4><a href= '/blog?id={{blog.owner_id}}'><i>written by  </i>{{blog.owner.username}}</a></h4>
             <hr />
             </li>
             {% endfor %}
