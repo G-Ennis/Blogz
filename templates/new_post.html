@@ -3,23 +3,21 @@
 {% block content %}
 
     <h1>Add a Blog Entry</h1>
-        <form method="POST">
-        <p>
-            <label for=blog_title>Title for your new blog:</label>
-                <input id="blog_title" type="text" name="blog_title" value={{blog_title}}>
-                {% if title_error %}
-                    <p class = "error">{{ title_error }}</p>
-                {% endif %}    
-        </p>   
-            
-        <p>
-            <label for=blog_body>Your new blog:</label>
-                <textarea name="blog_body" rows='10' cols='20' value={{blog_body}}></textarea>
-                {% if blog_body_error %}
-                    <p class = "error">{{ blog_body_error }}</p>
-                {% endif %}    
-        </p>    
-    
+        <form action="/newpost" method="post">
+        <table>
+            <tr>
+                <td><label for=blog_title>Title for your new blog:</label></td>
+                <td>
+                    <input id="blog_title" type="text" name="blog_title" value="{{blog_title}}"> 
+                </td>    
+            </tr>
+            <tr>
+                <td><label for="blog_body">Your new blog:</label></td>
+                <td>
+                    <textarea name="blog_body" rows='10' cols='20' value="{{blog_body}}"></textarea>  
+                </td>
+            </tr>
+        </table>    
         <input type="submit" value="Add Entry">
     </form>
 

@@ -57,7 +57,7 @@ def login():
             flash("Logged in")
             return redirect('/')
         else:
-            flash('User password incorrect or user does not exist','error') 
+            flash("User password incorrect or user does not exist","error") 
     return render_template('login.html')
 
 
@@ -65,32 +65,32 @@ def login():
 def signup():
     if request.method == 'POST': 
         username = request.form['username'] 
-        username_error = ''
-
-        if len(username) < 3 or len(username) > 20:
-            username_error = "Username must be between 3 and 20 characters"
-        if ' ' in username:
-            username_error = "Not a valid username"   
+       
+        if len(username) < 3 or len(username) > 20 or ' ' in username:
+            flash("Username must be between 3 and 20 characters with no spaces", "error")
+            return redirect('/signup')
 
         password = request.form['password'] 
-        password_error = ''
         verify = request.form['verify']
-        verify_error = ''
-    
-        if len(password) < 3 or len(password) > 20:
-            password_error = "Password must be between 3 and 20 characters"
-            password = ''
-        if ' ' in password:
-            password_error = "Not a valid password"
-            password = ''
-        if verify != password or len(verify) == 0:
-            verify_error = "Passwords do not match"
-            verify = ''
 
-        if not username_error and not password_error and not verify_error:
-            return render_template('index.html', username = username)
-        else:
-            return render_template('signup.html', username = username, username_error = username_error, password_error = password_error, verify_error = verify_error, email = email, email_error = email_error)
+        if len(password) < 3 or len(password) > 20 or ' ' in password:
+            flash("Password must be between 3 and 20 characters with no spaces", "error")
+            return redirect ('/signup')
+
+        if verify != password or len(verify) == 0:
+            flash("Passwords do not match", "error")
+            return redirect ('/signup')
+
+            existing_user = User.query.filter_by(username=username).first()
+            if not existing_user:
+                new_user = User(username, password)
+                db.session.add(new_user)
+                db.session.commit()
+                session['username'] = username
+                return redirect('/index')
+            else:
+                flash('Duplicate user', 'error')    
+    return render_template('signup.html')
 
 
 @app.route('/blog')
@@ -103,7 +103,7 @@ def blog():
 def single_blog():
     blog_id = request.args.get('id')
     blog = Blog.query.get(blog_id)
-    return render_template('single_blog.html', blog=blog)
+    return render_template('single_blog.html', blog=blog, blog_id=blog_id)
     
 
 @app.route('/newpost', methods=['GET', 'POST'])
@@ -114,23 +114,27 @@ def new_post():
     if request.method == 'POST':
         blog_title = request.form['blog_title']
         blog_body = request.form['blog_body']
-       
-        title_error = ''
-        blog_body_error = ''
+        owner = User.query.filter(username=session['username']).first()
+        owner_id = owner.id
 
         if blog_title == "":
-            title_error = "Please enter a title for your blog"
+            flash("Please enter a title for your blog","error")
+            return redirect('/newpost')
 
         if blog_body == "":
-            blog_body_error = "Please enter content for your blog"
+            flash("Please enter content for your blog","error")
+            return redirect('newpost')
 
         if blog_body_error or title_error:
-            return render_template('new_post.html', blog_title=blog_title, blog_body=blog_body, title_error=title_error, blog_body_error=blog_body_error)
+            return render_template('new_post.html', blog_title=blog_title, blog_body=blog_body)
         else: 
-            blog = Blog(blog_title, blog_body)
-            db.session.add(blog)
+            newpost = Blog(blog_title, blog_body, owner)
+            db.session.add(newpost)
             db.session.commit()
-            return render_template('single_blog.html', blog=blog, blog_title=blog_title, blog_body=blog_body)    
+            blog = Blog.query.filter_by(title=title).first()
+            user = User.query.filter_by(id = owner_id).first()
+
+            return render_template('single_blog.html', blog=blog, user=user, blog_title=blog_title, blog_body=blog_body)    
 
 
 @app.route('/singleuser')
@@ -139,7 +143,7 @@ def singleuser():
     user = User.query.get(user_id)
     owner = user
     blog = Blog.query.filter_by(owner_id=user_id).all
-    return render_template('single_user.html', blogs=blogs)
+    return render_template('single_user.html', blog=blog, user_id=user_id, user=user)
 
 
 @app.route('/logout', methods=['GET'])
