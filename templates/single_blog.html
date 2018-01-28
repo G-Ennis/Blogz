@@ -2,16 +2,11 @@
 
 {% block content %}
 <head>
-    <style>
-    h2 {
-        text-align:center;
-        font-size: 40px;
-        }
-    </style>
+
 </head>
 <body>
 <h2><a href = '/single_blog?id={{blog.blog_id}}'></a>{{blog.title}}</h2>
 <p>{{blog.body}}</p>
-<h4><a href="/single_blog?user={{blog.owner_id}}"></a>{{blog.owner.username}}</h4>
+<h4><i>Written by </i><a href="/single_blog?user={{blog.owner_id}}"></a>{{blog.owner.username}}</h4>
 </body>
 {% endblock %}

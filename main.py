@@ -112,29 +112,27 @@ def new_post():
         return render_template('new_post.html')
 
     if request.method == 'POST':
-        blog_title = request.form['blog_title']
+        title = request.form['blog_title']
         blog_body = request.form['blog_body']
-        owner = User.query.filter(username=session['username']).first()
+        owner = User.query.filter_by(username=session['username']).first()
         owner_id = owner.id
 
-        if blog_title == "":
+        if title == "":
             flash("Please enter a title for your blog","error")
             return redirect('/newpost')
 
         if blog_body == "":
             flash("Please enter content for your blog","error")
             return redirect('newpost')
-
-        if blog_body_error or title_error:
-            return render_template('new_post.html', blog_title=blog_title, blog_body=blog_body)
+            
         else: 
-            newpost = Blog(blog_title, blog_body, owner)
+            newpost = Blog(title, blog_body, owner)
             db.session.add(newpost)
             db.session.commit()
             blog = Blog.query.filter_by(title=title).first()
             user = User.query.filter_by(id = owner_id).first()
 
-            return render_template('single_blog.html', blog=blog, user=user, blog_title=blog_title, blog_body=blog_body)    
+            return render_template('single_blog.html', blog=blog, user=user, title=title, blog_body=blog_body)    
 
 
 @app.route('/singleuser')
