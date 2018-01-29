@@ -55,7 +55,7 @@ def login():
         if user and user.password == password:
             session['username'] = username
             flash("Logged in")
-            return redirect('/')
+            return redirect('/newpost')
         else:
             flash("User password incorrect or user does not exist","error") 
     return render_template('login.html')
@@ -81,15 +81,16 @@ def signup():
             flash("Passwords do not match", "error")
             return redirect ('/signup')
 
-            existing_user = User.query.filter_by(username=username).first()
-            if not existing_user:
-                new_user = User(username, password)
-                db.session.add(new_user)
-                db.session.commit()
-                session['username'] = username
-                return redirect('/index')
-            else:
-                flash('Duplicate user', 'error')    
+        existing_user = User.query.filter_by(username=username).first()
+        if not existing_user:
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['username'] = username
+            flash("You have successfully registered")
+            return redirect('/newpost')
+        else:
+            flash('User already exists', 'error')    
     return render_template('signup.html')
 
 
@@ -111,12 +112,13 @@ def new_post():
     if request.method == 'GET':
         return render_template('new_post.html')
 
+    owner = User.query.filter_by(username=session['username']).first()   
+    owner_id = owner.id
+
     if request.method == 'POST':
         title = request.form['blog_title']
         blog_body = request.form['blog_body']
-        owner = User.query.filter_by(username=session['username']).first()
-        owner_id = owner.id
-
+        
         if title == "":
             flash("Please enter a title for your blog","error")
             return redirect('/newpost')
@@ -131,8 +133,9 @@ def new_post():
             db.session.commit()
             blog = Blog.query.filter_by(title=title).first()
             user = User.query.filter_by(id = owner_id).first()
+            return redirect('/single_blog?id={id}'.format(id = blog.id))
 
-            return render_template('single_blog.html', blog=blog, user=user, title=title, blog_body=blog_body)    
+    #return render_template('new_post.html', blog=blog, user=user, title=title, blog_body=blog_body, owner=owner)    
 
 
 @app.route('/singleuser')
@@ -148,7 +151,7 @@ def singleuser():
 def logout():
     if "username" in session:
         del session["username"]
-    return render_template('blog.html')
+    return redirect('/login')
         
 
 if __name__ == '__main__':
