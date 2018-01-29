@@ -110,7 +110,7 @@ def single_blog():
 @app.route('/newpost', methods=['GET', 'POST'])
 def new_post():
     if request.method == 'GET':
-        return render_template('new_post.html')
+        return render_template('new_post.html', title="Add a Blog Entry")
 
     owner = User.query.filter_by(username=session['username']).first()   
     owner_id = owner.id
@@ -133,9 +133,8 @@ def new_post():
             db.session.commit()
             blog = Blog.query.filter_by(title=title).first()
             user = User.query.filter_by(id = owner_id).first()
-            return redirect('/single_blog?id={id}'.format(id = blog.id))
-
-    #return render_template('new_post.html', blog=blog, user=user, title=title, blog_body=blog_body, owner=owner)    
+            return redirect('/singleblog?id={id}'.format(id = blog.id))
+   
 
 
 @app.route('/singleuser')

@@ -3,13 +3,13 @@
 {% block content %}
     <h1>Blog Posts!</h1>
         <ul>
+            {% for blog in blogs %}
             <li>
-                {% for blog in blogs %}
-
-                <h2><a href = '/single_user?id={{blog.blog_id}}'></a>{{blog.title}}</h2>
+                <h2><a href='/singleuser?id={{blog.blog_id}}'></a>{{blog.title}}</h2>
                 <p>{{blog.body}}</p>
-                <h4><i>Written by</i><a href= '/single_user?user={{blog.owner_id}}'></a>{{blog.owner.username}}</h4>
+                <h4><i>Written by</i><a href='/singleuser?user={{blog.owner_id}}'>{{blog.owner.username}}</a></h4>
             </li>
+            {% endfor%}
         </ul>
 
 {% end block %}
