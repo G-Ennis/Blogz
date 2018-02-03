@@ -43,7 +43,26 @@ def require_login():
 @app.route('/')
 def index():
     users = User.query.all()
+    
     return render_template('index.html', title="blog users!", users=users)
+
+@app.route('/blog')
+def blog():
+    blogs = Blog.query.order_by(Blog.id.desc()).all()
+    return render_template('blog.html', title="blog posts!", blogs=blogs)
+
+
+@app.route('/singleblog')
+def single_blog():
+    blog_id = request.args.get('id')
+    blog = Blog.query.get(blog_id)
+    return render_template('single_blog.html', blog=blog, blog_id=blog_id)
+
+@app.route('/singleuser')
+def singleuser():
+    user_id = request.args.get('id')
+    blogs = Blog.query.filter_by(owner_id=user_id).all()
+    return render_template('single_user.html', user_blogs=blogs)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -94,19 +113,6 @@ def signup():
     return render_template('signup.html')
 
 
-@app.route('/blog')
-def blog():
-    blogs = Blog.query.order_by(Blog.id.desc()).all()
-    return render_template('blog.html', title="blog posts!", blogs=blogs)
-
-
-@app.route('/singleblog')
-def single_blog():
-    blog_id = request.args.get('id')
-    blog = Blog.query.get(blog_id)
-    return render_template('single_blog.html', blog=blog, blog_id=blog_id)
-    
-
 @app.route('/newpost', methods=['GET', 'POST'])
 def new_post():
     if request.method == 'GET':
@@ -134,16 +140,6 @@ def new_post():
             blog = Blog.query.filter_by(title=title).first()
             user = User.query.filter_by(id = owner_id).first()
             return redirect('/singleblog?id={id}'.format(id = blog.id))
-   
-
-
-@app.route('/singleuser')
-def singleuser():
-    user_id = request.args.get('user')
-    user = User.query.get(user_id)
-    owner = user
-    blog = Blog.query.filter_by(owner_id=user_id).all
-    return render_template('single_user.html', blog=blog, user_id=user_id, user=user)
 
 
 @app.route('/logout', methods=['GET'])
