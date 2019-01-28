@@ -1,6 +1,7 @@
 from flask import Flask, request, redirect, render_template, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from hashutils import make_pw_hash, check_pw_hash
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -8,6 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:fS2mbWR@localhost
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 app.secret_key = '2Xe$vHjVr1&G'
+Bootstrap(app)
 
 
 class Blog(db.Model):
