@@ -1,0 +1,15 @@
+.error{
+    color: red;
+}
+h1{
+    text-align: center;
+}
+body{
+    background-color: rgb(192, 217, 250); */
+    /* background-image: url('/static/img/images.jpg'); */
+    background-position: center;
+    background-repeat: no-repeat;
+}    
+h6{
+    color: rgb(0, 110, 255);
+}

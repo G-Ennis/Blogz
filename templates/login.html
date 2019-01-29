@@ -2,6 +2,8 @@
 
 {% block content %}
 <h1>Log in</h1>
+<h6><em>Please login to post a new blog.</em></h6>
+
 <form action="/login" method="post">
     <table>
         <tr>
@@ -17,8 +19,10 @@
             </td>
         </tr>
     </table>
+
     <input type="submit" value="Login">
 </form>
+<hr>
 
 <p>If you don't have an account, you may <a href="/signup">register</a> for one!</p>
 
